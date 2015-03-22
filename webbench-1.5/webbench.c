@@ -49,7 +49,12 @@ int mypipe[2];
 char host[MAXHOSTNAMELEN];
 #define REQUEST_SIZE 2048
 char request[REQUEST_SIZE];
-
+/*struct option {
+    const char *name;
+    int has_arg;
+    int *flag;
+    int val;
+};在getopt.h中有定义*/
 static const struct option long_options[]=
 {
  {"force",no_argument,&force,1},
@@ -66,7 +71,7 @@ static const struct option long_options[]=
  {"version",no_argument,NULL,'V'},
  {"proxy",required_argument,NULL,'p'},
  {"clients",required_argument,NULL,'c'},
- {NULL,0,NULL,0}
+ {NULL,0,NULL,0}   //for what?
 };
 
 /* prototypes */
@@ -115,7 +120,7 @@ int main(int argc, char *argv[])
  {
   switch(opt)
   {
-   case  0 : break;
+   case  0 : break;//返回值等于0，说明相应的操作已经由option结构体和getopt_long函数完成
    case 'f': force=1;break;
    case 'r': force_reload=1;break; 
    case '9': http10=0;break;
@@ -143,19 +148,19 @@ int main(int argc, char *argv[])
 	     }
 	     *tmp='\0';
 	     proxyport=atoi(tmp+1);break;
-   case ':':
-   case 'h':
+   case ':':   //no use?
+   case 'h':   //no use?
    case '?': usage();return 2;break;
    case 'c': clients=atoi(optarg);break;
   }
  }
  
- if(optind==argc) {
+ if(optind==argc) {//只有选项参数
                       fprintf(stderr,"webbench: Missing URL!\n");
 		      usage();
 		      return 2;
-                    }
-
+                    } 
+//设置两个默认参数
  if(clients==0) clients=1;
  if(benchtime==0) benchtime=60;
  /* Copyright */
@@ -202,7 +207,7 @@ void build_request(const char *url)
   int i;
 
   bzero(host,MAXHOSTNAMELEN);
-  bzero(request,REQUEST_SIZE);
+  bzero(request,REQUEST_SIZE);//bzero is similar to memset
 
   if(force_reload && proxyhost!=NULL && http10<1) http10=1;
   if(method==METHOD_HEAD && http10<1) http10=1;
@@ -220,7 +225,7 @@ void build_request(const char *url)
 		  
   strcat(request," ");
 
-  if(NULL==strstr(url,"://"))
+  if(NULL==strstr(url,"://"))//找不到://
   {
 	  fprintf(stderr, "\n%s: is not a valid URL.\n",url);
 	  exit(2);
